@@ -1,2 +1,12 @@
 template: Hello, %s!
 defaultName: Stranger
+
+# use the simple server factory if you only want to run on a single port
+# then in url you have to use http://localhost:9080/application/{resourcename}
+# usually it's http://localhost:9080/{resourcename}
+server:
+  type: simple
+  connector:
+    type: http
+    port: 9080
+
