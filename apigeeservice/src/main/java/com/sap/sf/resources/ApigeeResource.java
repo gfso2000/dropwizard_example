@@ -27,10 +27,21 @@ public class ApigeeResource {
     apigee = new HttpClientApigee();
   }
 
+  @Path("/data")
   @GET
   @Timed
   public Saying sayHello(@QueryParam("dc") String dc, @QueryParam("timerange") String timeRange, @QueryParam("timeunit") String timeUnit) {
     final String value = apigee.doExecute(dc, timeRange, timeUnit);
-    return new Saying(counter.incrementAndGet(), value);
+    Saying saying = new Saying(counter.incrementAndGet(), value);
+    return saying;
+  }
+  
+  @Path("/dclist")
+  @GET
+  @Timed
+  public Saying getDCList() {
+    final String value = apigee.getDCList();
+    Saying saying = new Saying(counter.incrementAndGet(), value);
+    return saying;
   }
 }

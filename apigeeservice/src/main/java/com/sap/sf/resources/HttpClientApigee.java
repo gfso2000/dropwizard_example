@@ -3,11 +3,9 @@ package com.sap.sf.resources;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.Callable;
@@ -42,7 +40,7 @@ public class HttpClientApigee {
     config.setLoginUrl("https://apigeedc13-13vm.sflab.ondemand.com/login");
     config.setDataBaseUrl("https://apigeedc13-13vm.sflab.ondemand.com/ws/proxy/organizations/apimgmtprdzdc13/environments/qacandtest/stats/apiproxy?_optimized=js&limit=14400&select=sum(message_count),sum(is_error)");
     config.setUsername("jack.yu05@sap.com");
-    config.setPassword("Password1$");
+    config.setPassword("Password1");
     config.setProxyName("BizXAPIServer-ApiProxy");
     apigeeClientMap.put("DC13", new HttpClientWrapper(config));
     //DC8
@@ -57,6 +55,15 @@ public class HttpClientApigee {
     executorService = Executors.newFixedThreadPool(apigeeClientMap.size());
   }
   
+  public String getDCList(){
+    StringBuffer sb = new StringBuffer("");
+    Iterator<String> i = apigeeClientMap.keySet().iterator();
+    while(i.hasNext()) {
+      String key = i.next();
+      sb.append(key+";");
+    }
+    return sb.toString();
+  }
   public String doExecute(String dc, String timeRange, String timeUnit) {
     Future<APIResult> result = executorService.submit(new GetDataThread(dc, timeRange, timeUnit));
     try {
