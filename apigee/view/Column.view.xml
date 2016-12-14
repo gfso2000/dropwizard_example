@@ -1,0 +1,68 @@
+<mvc:View controllerName="sap.sf.apigee.controller.Column" xmlns="sap.m"
+	xmlns:core="sap.ui.core" xmlns:u="sap.ui.unified" xmlns:tnt="sap.tnt"
+    xmlns:viz="sap.viz.ui5.controls" xmlns:layout="sap.ui.layout" xmlns:table="sap.ui.table"
+    xmlns:mvc="sap.ui.core.mvc" xmlns:viz.feeds="sap.viz.ui5.controls.common.feeds"
+    xmlns:viz.data="sap.viz.ui5.data" height="100%">
+		<layout:FixFlex id='chartFixFlex' minFlexSize="250">
+	        <!--Below is the setting panel -->
+	        <layout:fixContent>
+	            <Panel id='settingsPanel' class="panelStyle" expandable="false" expanded="true" width="auto">
+	                <content>
+	                	<VBox class='settingsBox'>
+	                    <HBox class='settingsHBox'>
+							<HBox class='settingsBox'>
+		                    	<Label text = '{/dateRangeType/label}:' design="Bold" class='sapUiSmallMarginTop sapUiTinyMarginBeginEnd'></Label>
+		                    	<HBox class='settingsHBox'>
+									<Select id="rangeType" forceSelection="true" selectedKey="_24hours" change="onDateRangeChange"
+										items="{
+											path: '/dateRangeType/typeList',
+											sorter: { path: 'Name' }
+										}">
+										<core:Item key="{TypeId}" text="{TypeName}" />
+									</Select>
+									<DateRangeSelection id="DRS" visible="{path:'/dateValueDRSVisible'}"
+										dateValue="{path:'/dateValueDRS'}"
+										secondDateValue="{path:'/secondDateValueDRS'}" 
+										change="onDRSChanged" style="width:16rem;"/>
+		                    	</HBox>
+		                    </HBox>
+		                    <HBox class='settingsBox'>
+								<HBox>
+			                    	<Label text = '{/dcType/label}:' design="Bold" class='sapUiSmallMarginTop sapUiTinyMarginBeginEnd'></Label>
+									<ComboBox id="showDCName" selectedKey="ALL" selectionChange="onDCNameChange" 
+										items="{
+											path: '/dcType/typeList'
+										}">
+										<core:Item key="{TypeId}" text="{TypeName}" />
+									</ComboBox>
+								</HBox>
+							</HBox>
+	                    </HBox>
+	                	</VBox>
+	                </content>
+	            </Panel>
+	        </layout:fixContent>
+	        <layout:flexContent>
+	            <viz:Popover id="idPopOver"></viz:Popover>
+	            <viz:VizFrame id="idVizFrame" uiConfig="{applicationSet:'fiori'}" vizType='line'>
+	                <viz:dataset>
+	                    <viz.data:FlattenedDataset data="{/milk}">
+	                        <viz.data:dimensions>
+	                            <viz.data:DimensionDefinition name="{/dimensionLabel}" value="{timeUnit}" />
+	                        </viz.data:dimensions>
+	                        <viz.data:measures>
+			                	<!-- they will be replaced by js codes -->
+	                            <viz.data:MeasureDefinition name="{/metricMap/sumOfTraffic_DC1}" value="{sumOfTraffic_DC1}" />
+	                            <viz.data:MeasureDefinition name="{/metricMap/sumOfTraffic_DC2}" value="{sumOfTraffic_DC2}" />
+	                        </viz.data:measures>
+	                    </viz.data:FlattenedDataset>
+	                </viz:dataset>
+	
+	                <viz:feeds>
+	                    <viz.feeds:FeedItem id='valueAxisFeed' uid="valueAxis" type="Measure" values="{/metricMap/sumOfTraffic_DC1}" />
+	                    <viz.feeds:FeedItem id='categoryAxisFeed' uid="categoryAxis" type="Dimension" values="{/dimensionLabel}" />
+	                </viz:feeds>
+	            </viz:VizFrame>
+	        </layout:flexContent>
+	    </layout:FixFlex>
+</mvc:View>
