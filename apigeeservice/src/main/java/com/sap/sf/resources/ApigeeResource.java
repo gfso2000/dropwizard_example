@@ -32,7 +32,7 @@ public class ApigeeResource {
   @Timed
   public Saying sayHello(@QueryParam("dc") String dc, @QueryParam("timerange") String timeRange, @QueryParam("timeunit") String timeUnit) {
     final String value = apigee.doExecute(dc, timeRange, timeUnit);
-    Saying saying = new Saying(counter.incrementAndGet(), value);
+    Saying saying = new Saying(counter.incrementAndGet(), value, dc);
     return saying;
   }
   
@@ -41,7 +41,7 @@ public class ApigeeResource {
   @Timed
   public Saying getDCList() {
     final String value = apigee.getDCList();
-    Saying saying = new Saying(counter.incrementAndGet(), value);
+    Saying saying = new Saying(counter.incrementAndGet(), value, "");
     return saying;
   }
 }

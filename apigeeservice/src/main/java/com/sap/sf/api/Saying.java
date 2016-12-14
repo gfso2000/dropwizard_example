@@ -8,14 +8,16 @@ public class Saying {
 
     @Length(max = 3)
     private String content;
-
+    private String tag;
+    
     public Saying() {
         // Jackson deserialization
     }
 
-    public Saying(long id, String content) {
+    public Saying(long id, String content, String tag) {
         this.id = id;
         this.content = content;
+        this.tag = tag;
     }
 
     @JsonProperty
@@ -26,5 +28,9 @@ public class Saying {
     @JsonProperty
     public String getContent() {
         return content;
+    }
+    @JsonProperty
+    public String getTag() {
+        return tag;
     }
 }

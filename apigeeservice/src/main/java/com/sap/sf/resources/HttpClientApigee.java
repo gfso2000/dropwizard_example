@@ -13,6 +13,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -43,14 +44,38 @@ public class HttpClientApigee {
     config.setPassword("Password1");
     config.setProxyName("BizXAPIServer-ApiProxy");
     apigeeClientMap.put("DC13", new HttpClientWrapper(config));
+    //DC2
+    config = new ApigeeConfig();
+    config.setLoginUrl("https://apimgmt2.successfactors.eu/login");
+    config.setDataBaseUrl("https://apimgmt2.successfactors.eu/ws/proxy/organizations/hcmprod/environments/prodams/stats/apis?_optimized=js&limit=14400&select=sum(message_count)");
+    config.setUsername("jack.yu05@sap.com");
+    config.setPassword("Password1$");
+    config.setProxyName("BizXAPIServer-ApiProxy");
+    apigeeClientMap.put("DC2", new HttpClientWrapper(config));
+    //DC4
+    config = new ApigeeConfig();
+    config.setLoginUrl("https://apimgmt4-ui.successfactors.com/login");
+    config.setDataBaseUrl("https://apimgmt4-ui.successfactors.com/ws/proxy/organizations/hcmprod/environments/prodchand/stats/apis?_optimized=js&limit=14400&select=sum(message_count)");
+    config.setUsername("jack.yu05@sap.com");
+    config.setPassword("Password1$");
+    config.setProxyName("BizXAPIServer-ApiProxy");
+    apigeeClientMap.put("DC4", new HttpClientWrapper(config));
     //DC8
     config = new ApigeeConfig();
     config.setLoginUrl("https://apimgmt8.sapsf.com/login");
-    config.setDataBaseUrl("https://apimgmt8.sapsf.com/ws/proxy/organizations/hcmpreview/environments/previewash/stats/apis?_optimized=js&limit=14400&select=sum(message_count),sum(is_error)");
+    config.setDataBaseUrl("https://apimgmt8.sapsf.com/ws/proxy/organizations/hcmprod/environments/prodash/stats/apis?_optimized=js&limit=14400&select=sum(message_count)");
     config.setUsername("jack.yu05@sap.com");
     config.setPassword("Password1$");
     config.setProxyName("BizXAPIServer-ApiProxy");
     apigeeClientMap.put("DC8", new HttpClientWrapper(config));
+    //DC10
+    config = new ApigeeConfig();
+    config.setLoginUrl("https://apimgmt10-ui.sapsf.com/login");
+    config.setDataBaseUrl("https://apimgmt10-ui.sapsf.com/ws/proxy/organizations/hcmprod/environments/prodsyd/stats/apis?_optimized=js&limit=14400&select=sum(message_count)");
+    config.setUsername("jack.yu05@sap.com");
+    config.setPassword("Password1$");
+    config.setProxyName("BizXAPIServer-ApiProxy");
+    apigeeClientMap.put("DC10", new HttpClientWrapper(config));
     
     executorService = Executors.newFixedThreadPool(apigeeClientMap.size());
   }
@@ -67,13 +92,16 @@ public class HttpClientApigee {
   public String doExecute(String dc, String timeRange, String timeUnit) {
     Future<APIResult> result = executorService.submit(new GetDataThread(dc, timeRange, timeUnit));
     try {
-      APIResult data = result.get(60, TimeUnit.SECONDS);
+      APIResult data = result.get(130, TimeUnit.SECONDS);
       if(data.hasError) {
         //handle error resp
         return "error:"+data.getErrorMessage();
       } else {
         return data.getData();
       }
+    } catch (TimeoutException e) {
+      result.cancel(true);
+      return "error:timeout";
     } catch (Exception e) {
       // interrupts if there is any possible error
       result.cancel(true);
@@ -243,6 +271,15 @@ public class HttpClientApigee {
         HttpPost post = new HttpPost(loginUrl);
         post.setEntity(new UrlEncodedFormEntity(params));
         response = client.execute(post/*, httpContext*/);
+        
+        rd = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+        result = new StringBuffer();
+        line = "";
+        while ((line = rd.readLine()) != null) {
+          result.append(line);
+        }
+        rd.close();
+        System.err.println(result);
       }
       
       String timeUrl = "&timeRange="+timeRange.replaceAll(" ", "+")+"&timeUnit="+timeUnit;
